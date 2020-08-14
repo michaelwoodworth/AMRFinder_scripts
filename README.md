@@ -15,3 +15,44 @@ AMRFinder result analytic workflow
 	3. estimate relative abundance of identified AMR genes
 6. Analysis in R
 7. Produce heatmaps in R
+
+***
+
+## Workflow detail
+
+### 1. Prepare reads for assembly
+Since I work with human-associated metagenomes, in addition to trimming with trimmomatic, I usually attempt to remove reads aligning to reference human genomes.  This can be efficiently done in one step with the Huttenhower lab tool [kneaddata](https://huttenhower.sph.harvard.edu/kneaddata/).
+
+### 2. Assembly
+I primarily assemble genomes and metagenomes with [SPAdes](https://cab.spbu.ru/software/spades/).
+
+### 3. Predict genes
+Gene prediction at the metagenome, metagenome-assembled genome (MAG), and genome level are performed using [Prodigal](https://github.com/hyattpd/Prodigal)
+
+### 4. Annotate genes with AMRFinder
+Genes predicted in step 3 are then analyzed with [AMRFinder plus](https://www.ncbi.nlm.nih.gov/pathogens/antimicrobial-resistance/AMRFinder/).
+
+### 5. Post-processing
+
+1. 00_amrfinder_filter.py - this python script was written because AMRFinder produces some hits that are incomplete genes that may reduce confidence of your results.  This may be fine in an exploratory analysis, but for my purposes, I prefer to filter only hits that AMRFinder classifies as "ALLELE", "EXACT", "BLASTX", "HMM", which is the default usage:
+
+```console
+usage: 00_amrfinder_filter.py [-h] -i  -o  [-m]
+
+Filter AMRFinder Plus results for high confidence matches.
+
+This script filters AMRFinder output tables for matches, with
+default criteria focused on high quality & complete matches.
+e.g. >90% identity, >90% match length.
+
+Parameter options allow user to vary match length, identity,
+and inclusion of partial matches at the end of a contig.
+
+optional arguments:
+  -h, --help        show this help message and exit
+  -i , --in_file    Please specify AMRFinder output tsv file name & path.
+  -o , --out_file   Please specify AMRFinder filtered filename & path.
+  -m , --method     Please specify filtered AMRFinder output tsv file name &
+                    path. Select from: complete -or- add_partial_end
+```
+
