@@ -34,7 +34,9 @@ Genes predicted in step 3 are then analyzed with [AMRFinder plus](https://www.nc
 
 ### 5. Post-processing
 
-1. 00_amrfinder_filter.py - this python script was written because AMRFinder produces some hits that are incomplete genes that may reduce confidence of your results.  This may be fine in an exploratory analysis, but for my purposes, I prefer to filter only hits that AMRFinder classifies as "ALLELE", "EXACT", "BLASTX", "HMM", which is the default usage:
+1. 00_amrfinder_filter.py - this python script was written because AMRFinder produces some hits that are incomplete genes that may reduce confidence of your results.  This may be fine in an exploratory analysis, but for my purposes, I prefer to filter only hits that AMRFinder classifies as "ALLELE", "EXACT", "BLASTX", "HMM", which is the default usage.
+
+This script allows users to also include AMRFinder hits that were partial but located at the end of a contig sequence, which could be consistent with a sequencing/assembly issue of a gene that may be complete in host.  This option is flagged with the -m add_partial_end option.
 
 ```console
 usage: 00_amrfinder_filter.py [-h] -i  -o  [-m]
@@ -56,3 +58,22 @@ optional arguments:
                     path. Select from: complete -or- add_partial_end
 ```
 
+2. 01_amrfinder_binary_matrix.py - this python script searches for .tsv files in an input directory and produces a binary presence/absence matrix for all genes across all samples coded as 0 for absent and 1 as present.
+
+```console
+usage: 01_amrfinder_binary_matrix.py [-h] -i INPUT -o OUTPUT [-v]
+
+Create summary matrix of AMRFinder Plus results for plots & analysis.
+
+This script sumamrizes filtered tables from 00_amrfinder_filter.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INPUT, --input INPUT
+                        Please specify input directory path.
+  -o OUTPUT, --output OUTPUT
+                        Please specify output filename & path.
+  -v, --verbose         Increase output messaging detail, print results.
+```
+
+3. 02_amrfinder_estimate_gene_RPKM.py - this python script 
