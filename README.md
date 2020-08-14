@@ -10,5 +10,8 @@ AMRFinder result analytic workflow
 3. Predict genes
 4. Annotate genes with AMRFinder
 5. Post-processing
-	1. filter for complete genes (00_amrfinder_filter.py)
-	2. 
+	1. filter for complete genes ([00_amrfinder_filter.py](https://github.com/michaelwoodworth/AMRFinder_scripts/blob/master/01_amrfinder_binary_matrix.py))
+	2. create binary presence/absence matrix ([01_amrfinder_binary_matrix.py](https://github.com/michaelwoodworth/AMRFinder_scripts/blob/master/01_amrfinder_binary_matrix.py))
+	3. estimate relative abundance of identified AMR genes
+6. Analysis in R
+7. Produce heatmaps in R
