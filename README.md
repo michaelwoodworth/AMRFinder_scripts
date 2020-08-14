@@ -76,4 +76,8 @@ optional arguments:
   -v, --verbose         Increase output messaging detail, print results.
 ```
 
-3. 02_amrfinder_estimate_gene_RPKM.py - this python script 
+3. 02_amrfinder_estimate_gene_RPKM.py - this python script normalizes AMRFinder gene hit relative abundance across sampes using reads per kilobase per million mapped reads [RPKM](https://sites.google.com/site/wiki4metagenomics/pdf/definition/rpkm-calculation).
+
+Where:
+RPKM = numReads / (geneLength/1000 * totalNumReads/1,000,000)
+
