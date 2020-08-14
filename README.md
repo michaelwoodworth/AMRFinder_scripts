@@ -9,3 +9,6 @@ AMRFinder result analytic workflow
 2. Assembly
 3. Predict genes
 4. Annotate genes with AMRFinder
+5. Post-processing
+	1. filter for complete genes (00_amrfinder_filter.py)
+	2. 
