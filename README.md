@@ -51,11 +51,11 @@ Parameter options allow user to vary match length, identity,
 and inclusion of partial matches at the end of a contig.
 
 optional arguments:
-  -h, --help        show this help message and exit
-  -i , --in_file    Please specify AMRFinder output tsv file name & path.
-  -o , --out_file   Please specify AMRFinder filtered filename & path.
-  -m , --method     Please specify filtered AMRFinder output tsv file name &
-                    path. Select from: complete -or- add_partial_end
+  -h, --help      show this help message and exit
+  -i , --input    Please specify AMRFinder output tsv file name & path.
+  -o , --output   Please specify AMRFinder filtered filename & path.
+  -m , --method   Please specify filtered AMRFinder output tsv file name &
+                  path. Select from: complete -or- add_partial_end
 ```
 
 2. 01_amrfinder_binary_matrix.py - this python script searches for .tsv files in an input directory and produces a binary presence/absence matrix for all genes across all samples coded as 0 for absent and 1 as present.
@@ -68,12 +68,10 @@ Create summary matrix of AMRFinder Plus results for plots & analysis.
 This script sumamrizes filtered tables from 00_amrfinder_filter.
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -i INPUT, --input INPUT
-                        Please specify input directory path.
-  -o OUTPUT, --output OUTPUT
-                        Please specify output filename & path.
-  -v, --verbose         Increase output messaging detail, print results.
+  -h, --help      show this help message and exit
+  -i , --input    Please specify input directory path.
+  -o , --output   Please specify output filename & path.
+  -v, --verbose   Increase output messaging detail, print results.
 ```
 
 3. 02_amrfinder_estimate_gene_RPKM.py - this python script normalizes AMRFinder gene hit relative abundance across sampes using reads per kilobase per million mapped reads [RPKM](https://sites.google.com/site/wiki4metagenomics/pdf/definition/rpkm-calculation).

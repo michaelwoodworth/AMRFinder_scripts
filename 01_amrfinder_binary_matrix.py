@@ -89,11 +89,13 @@ def main():
 	parser.add_argument(
 		'-i', '--input',
 		help='Please specify input directory path.',
+		metavar = '',
 		required=True
 		)
 	parser.add_argument(
 		'-o', '--output',
 		help='Please specify output filename & path.',
+		metavar = '',
 		required=True
 		)
 	parser.add_argument(

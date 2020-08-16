@@ -95,14 +95,14 @@ def main():
 		formatter_class = argparse.RawDescriptionHelpFormatter
 		)
 	parser.add_argument(
-		'-i', '--in_file',
+		'-i', '--input',
 		help = 'Please specify AMRFinder output tsv file name & path.',
 		metavar = '',
 		type=str,
 		required=True
 		)
 	parser.add_argument(
-		'-o', '--out_file',
+		'-o', '--output',
 		help = 'Please specify AMRFinder filtered filename & path.',
 		metavar = '',
 		type=str,
