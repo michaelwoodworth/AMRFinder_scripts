@@ -36,7 +36,11 @@ Genes predicted in step 3 are then analyzed with [AMRFinder plus](https://www.nc
 
 1. 00_amrfinder_filter.py - this python script was written because AMRFinder produces some hits that are incomplete genes that may reduce confidence of your results.  This may be fine in an exploratory analysis, but for my purposes, I prefer to filter only hits that AMRFinder classifies as "ALLELE", "EXACT", "BLASTX", "HMM", which is the default usage.
 
+*add_partial_end*
 This script allows users to also include AMRFinder hits that were partial but located at the end of a contig sequence, which could be consistent with a sequencing/assembly issue of a gene that may be complete in host.  This option is flagged with the -m add_partial_end option.
+
+*just_amr*
+The -j/--just_AMR flag allows filtering of just AMR results.
 
 ```console
 usage: 00_amrfinder_filter.py [-h] -i  -o  [-m]
@@ -52,10 +56,12 @@ and inclusion of partial matches at the end of a contig.
 
 optional arguments:
   -h, --help      show this help message and exit
-  -i , --input    Please specify AMRFinder output tsv file name & path.
+  -i , --input    Please specify AMRFinder input tsv file name & path.
   -o , --output   Please specify AMRFinder filtered filename & path.
   -m , --method   Please specify filtered AMRFinder output tsv file name &
                   path. Select from: complete -or- add_partial_end
+  -j, --just_AMR  Flag to remove non-AMR AMRFinder results (e.g. virulence,
+                  stress)
 ```
 
 2. 01_amrfinder_binary_matrix.py - this python script searches for .tsv files in an input directory and produces a binary presence/absence matrix for all genes across all samples coded as 0 for absent and 1 as present.
