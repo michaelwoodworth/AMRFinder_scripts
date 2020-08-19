@@ -6,8 +6,7 @@ This script filters AMRFinder output tables for matches, with
 default criteria focused on high quality & complete matches.
 e.g. >90% identity, >90% match length.
 
-Parameter options allow user to vary match length, identity,
-and inclusion of partial matches at the end of a contig.
+Script options also allow filtering for just AMR determinants.
 '''
 
 import argparse

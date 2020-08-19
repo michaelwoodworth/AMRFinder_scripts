@@ -36,10 +36,10 @@ Genes predicted in step 3 are then analyzed with [AMRFinder plus](https://www.nc
 
 1. 00_amrfinder_filter.py - this python script was written because AMRFinder produces some hits that are incomplete genes that may reduce confidence of your results.  This may be fine in an exploratory analysis, but for my purposes, I prefer to filter only hits that AMRFinder classifies as "ALLELE", "EXACT", "BLASTX", "HMM", which is the default usage.
 
-*add_partial_end*
+- *add_partial_end*: 
 This script allows users to also include AMRFinder hits that were partial but located at the end of a contig sequence, which could be consistent with a sequencing/assembly issue of a gene that may be complete in host.  This option is flagged with the -m add_partial_end option.
 
-*just_amr*
+- *just_amr*:
 The -j/--just_AMR flag allows filtering of just AMR results.
 
 ```console
@@ -51,8 +51,7 @@ This script filters AMRFinder output tables for matches, with
 default criteria focused on high quality & complete matches.
 e.g. >90% identity, >90% match length.
 
-Parameter options allow user to vary match length, identity,
-and inclusion of partial matches at the end of a contig.
+Script options also allow filtering for just AMR determinants.
 
 optional arguments:
   -h, --help      show this help message and exit
