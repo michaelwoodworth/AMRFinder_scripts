@@ -12,32 +12,28 @@ and inclusion of partial matches at the end of a contig.
 
 import argparse
 
-def dict_writer(protein_id, HMM_id, method_type, d, line, duplicates):
+def dict_writer(protein_id, sequence_name, HMM_id, 
+	method_type, d, line, duplicates):
 
-	if HMM_id in d:
+	if sequence_name in d.values():
+		duplicates += 1	
+
+	elif HMM_id in d.values():
 		duplicates += 1
-
-		for m_type in methods:
-			if method_type.startswith(mtype):
-				d[protein_id] = line
-				break
 
 	else:
 		d[protein_id] = line
 
-	#print(d)
 	return d, duplicates
 
 
-def method_filter(infile, outfile, method):
+def method_filter(infile, outfile, method, just_AMR):
 	d = {}				# initialize dictionary for writing matches
 	total = 0			# counter for number of AMRFinder lines/matches
 	method_match = 0	# counter for number of genes matching method criteria
 	method_fail = 0		# counter for number of genes failing method criteria filter
 	duplicates = 0		# counter for number of duplicate genes
-
-	print("file:", infile)
-	print("method:", method)
+	just_AMR_count = 0
 
 	if method == "complete":
 		methods = ["ALLELE", "EXACT", "BLAST", "HMM"]
@@ -68,23 +64,36 @@ def method_filter(infile, outfile, method):
 			HMM_desc = X[17]		# description of closest HMM
 #			print(line)
 
+			# print(method_type, element_type)
 			if method_type.startswith(tuple(methods)):
-				#print(line)
 
-				d, duplicates = dict_writer(protein_id, HMM_id, method_type, d, line, duplicates)
+				# add option to filter just AMR results
+				if just_AMR:
+					if element_type == 'AMR':
+						d, duplicates = dict_writer(protein_id, sequence_name,
+							HMM_id, method_type, d, line, duplicates)
+						just_AMR_count += 1
+
+				else:
+					d, duplicates = dict_writer(protein_id, sequence_name,
+						 HMM_id, method_type, d, line, duplicates)
+
 				method_match += 1
 
 			else:
 				method_fail += 1
 
+	print('Writing output file...')
 	with open(outfile, 'w') as file:
 		for key, value in d.items():
 			file.write(value)
-
+	print('Done.')
+	print('')
 
 	print('Number of total hits in unfiltered AMRFinder table: ', total)
 	print('Number of lines passing filter:', method_match,"(",(method_match/total),"% ).")
 	print('Number of lines failing filter:', method_fail,"(",(method_fail/total),"% ).")
+	print('Number of just AMR results:', just_AMR_count)
 	print('Number of duplicate HMM ids:', duplicates,"(",(duplicates/total),"% ).")
 
 
@@ -96,7 +105,7 @@ def main():
 		)
 	parser.add_argument(
 		'-i', '--input',
-		help = 'Please specify AMRFinder output tsv file name & path.',
+		help = 'Please specify AMRFinder input tsv file name & path.',
 		metavar = '',
 		type=str,
 		required=True
@@ -114,13 +123,24 @@ def main():
 		Select from: complete -or- add_partial_end',
 		metavar = '',
 		type=str,
+		default = 'complete',
 		choices=['complete', 'add_partial_end']
+		)
+	parser.add_argument(
+		'-j', '--just_AMR',
+		help = 'Flag to remove non-AMR AMRFinder results (e.g. virulence, stress)',
+		required=False,
+		action='store_true'
 		)
 	args=vars(parser.parse_args())
 
+	print('')
+	print("File:", args['input'])
+	print("Method:", args['method'])
+
 	print('Filtering results...')
-	method_filter(args['in_file'], args['out_file'], args['method'])
-	print('\n')
+	method_filter(args['input'], args['output'], 
+		args['method'], args['just_AMR'])
 
 if __name__ == "__main__":
 	main()
