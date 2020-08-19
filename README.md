@@ -43,7 +43,7 @@ This script allows users to also include AMRFinder hits that were partial but lo
 The -j/--just_AMR flag allows filtering of just AMR results.
 
 ```console
-usage: 00_amrfinder_filter.py [-h] -i  -o  [-m]
+usage: 00_amrfinder_filter.py [-h] -i  -o  [-m] [-j]
 
 Filter AMRFinder Plus results for high confidence matches.
 
@@ -62,6 +62,7 @@ optional arguments:
                   path. Select from: complete -or- add_partial_end
   -j, --just_AMR  Flag to remove non-AMR AMRFinder results (e.g. virulence,
                   stress)
+
 ```
 
 2. 01_amrfinder_binary_matrix.py - this python script searches for .tsv files in an input directory and produces a binary presence/absence matrix for all genes across all samples coded as 0 for absent and 1 as present.
