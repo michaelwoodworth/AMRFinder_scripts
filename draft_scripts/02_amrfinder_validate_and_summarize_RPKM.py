@@ -173,13 +173,13 @@ def generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, verbose):
 
 	matrix = defaultdict(list)
 	unique_gene_list = []
-	AMR_gene_seq_RPKM = defaultdict(defaultdict(list).copy)		# initialize dict
+	AMR_name_scaffold_RPKM = defaultdict(defaultdict(list).copy)		# initialize dict
 
-	for gene in AMR_dict.values():
-		if gene not in unique_gene_list:
-			unique_gene_list.append(gene)
-			AMR_gene_seq_RPKM[gene]=list(AMR_dict.keys())[list(AMR_dict.values()).index(gene)]
+	for gene, sequence_name in AMR_dict.items():
+		if sequence_name not in unique_gene_list:
+			unique_gene_list.append(sequence_name)
 
+			AMR_name_scaffold_RPKM[sequence_name]=f"{gene}\t{RPKM_dict[gene]}"
 
 	for mg_id in MG_IDs:
 		if verbose:
@@ -187,7 +187,9 @@ def generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, verbose):
 			print(f"   Evaluating {mg_id}...")
 
 		for gene in unique_gene_list:
-			if gene in MG_IDs[mg_id]:
+			
+
+			if gene in AMR_name_scaffold_RPKM.keys():
 				matrix[mg_id].append(RPKM_dict[mg_id])
 				if verbose:
 					print(gene)
