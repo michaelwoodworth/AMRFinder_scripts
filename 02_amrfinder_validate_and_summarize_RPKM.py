@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-'''Estimate RPKM of detected AMR genes 
+'''Validate and summarize RPKM of AMRFinder-detected genes 
 for plots & analysis.
 
 This script takes the following inputs:
 - directory containing filtered AMRFinder tsv files
 	(output from step 00)
-- directory containing *_gene_RPKM.tsv files
+- directory containing ${uniqueID}_gene_RPKM.tsv files
 	(https://github.com/rotheconrad/00_in-situ_GeneCoverage)
 
 As an intermediate validation step, all genes input in AMRFinder 
@@ -287,7 +287,7 @@ def generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, verbose):
 
 	print(f"Looks like everything completed.  {len(MG_IDs)} MGs evaluated with {len(unique_gene_list)} unique genes.")
 	
-	return RPKM_matrix, unique_gene_list
+	return RPKM_matrix, unique_gene_list, dedup_dict
 
 def main():
 	# configure argparse arguments & pass to functions.
@@ -311,7 +311,7 @@ def main():
 		)
 	parser.add_argument(
 		'-o', '--output',
-		help = 'Please specify output file path & prefix.',
+		help = 'Please specify output file path (& optional prefix).',
 		metavar = '',
 		type=str,
 		required=True
@@ -319,6 +319,16 @@ def main():
 	parser.add_argument(
 		'-v', '--verbose',
 		help = 'Toggle volume of printed output.',
+		action='store_true'
+		)
+	parser.add_argument(
+		'-V', '--validate',
+		help = 'Write validation list to $output/genes_to_validate.tsv.',
+		action='store_true'
+		)
+	parser.add_argument(
+		'-d', '--deduplicated_output',
+		help = 'Write deduplicated RPKM & contigs to $output/deduplicated.tsv.',
 		action='store_true'
 		)
 	args=vars(parser.parse_args())
@@ -332,7 +342,15 @@ def main():
 	AMR_dict, MG_IDs= parse_amrfinder_tsvs(args['amrfinder_tsv_path'], args['verbose'])
 	RPKM_dict= parse_coverage_tsvs(args['coverage_magic_path'], args['verbose'], AMR_dict)
 	validate_dict, validate_detail_dict= validate(RPKM_dict, AMR_dict, args['amrfinder_tsv_path'], args['verbose'])	
-	RPKM_matrix, unique_gene_list= generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, args['verbose'])
+	RPKM_matrix, unique_gene_list, dedup_dict= generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, args['verbose'])
+
+# option to write validate_detail_dict.tsv file
+	if args['validate']:
+		validate_detail_dict.to_csv(f"{args['output']}/genes_to_validate.tsv", sep='\t')
+
+# option to write dedup.tsv file
+	if args['deduplicated_output']:
+		dedup_dict.to_csv(f"{args['output']}/deduplicated.tsv", sep='\t')
 
 # write output tsv file
 	RPKM_matrix.to_csv(f"{args['output']}/RPKM_matrix.tsv", sep='\t')
