@@ -101,8 +101,8 @@ def validate(RPKM_dict, AMR_dict, AMR_input_directory, verbose):
 		total_genes += 1
 
 		if gene not in RPKM_dict.keys():
-			# print(f"      gene to validate: {gene}")
-			# print(f"      sequence_name to validate: {sequence_name}")
+			# print(f"	  gene to validate: {gene}")
+			# print(f"	  sequence_name to validate: {sequence_name}")
 			validate_dict[gene]=sequence_name
 		else:
 			valid_gene += 1
@@ -168,46 +168,126 @@ def validate(RPKM_dict, AMR_dict, AMR_input_directory, verbose):
 def generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, verbose):
 	print('Generating RPKM matrix...')
 
+	# initialize dict, lists
 	# AMR_dict - 	key: gene/scaffold name 	value: sequence name (unique)
 	# RPKM_dict - 	key: gene/scaffold name  	value: RPKM value
 
+	AMR_scaffold_RPKM = defaultdict(list)
+	scaf_mgid_name_rpkm = defaultdict(int)
 	matrix = defaultdict(list)
+	mg_genes = defaultdict(list)
+	dedup_dict = defaultdict(list)
+
 	unique_gene_list = []
-	AMR_name_scaffold_RPKM = defaultdict(defaultdict(list).copy)		# initialize dict
+	MG_IDs = []
 
-	for gene, sequence_name in AMR_dict.items():
-		if sequence_name not in unique_gene_list:
-			unique_gene_list.append(sequence_name)
+	# generate list of unique AMR genes & MG IDs
+	for scaffold, gene_name in AMR_dict.items():
+		if gene_name not in unique_gene_list:
+			unique_gene_list.append(gene_name)
+		mg_id=scaffold.rstrip().split('_')[0]
+		if mg_id not in MG_IDs:
+			MG_IDs.append(mg_id)
+		#print(f' gene_name: {gene_name},   MG_ID: {mg_id}')
 
-			AMR_name_scaffold_RPKM[sequence_name]=f"{gene}\t{RPKM_dict[gene]}"
+	# output counts if verbose
+	if verbose:
+		print(f"{len(MG_IDs)} MG IDs | {len(unique_gene_list)} unique genes detected")
 
-	for mg_id in MG_IDs:
+	# merge AMR_dict & RPKM_dictionaries as scaffold : gene_name, RPKM
+	for d in (AMR_dict, RPKM_dict):
+		for key, value in d.items():
+			AMR_scaffold_RPKM[key].append(value)
+
+	# split into structured dictionary - scaffold : gene name, RPKM,  MG ID
+	for scaffold, name_RPKM in AMR_scaffold_RPKM.items():
+		if len(name_RPKM) > 1:
+			scaf_mgid_name_rpkm[scaffold] = { 'name' : name_RPKM[0],
+											  'RPKM' : name_RPKM[1],
+											  'mg_id' : scaffold.rstrip().split('_')[0]
+											}
+		else:
+			scaf_mgid_name_rpkm[scaffold] = { 'name' : name_RPKM[0],
+											  'RPKM' : 0,
+											  'mg_id' : scaffold.rstrip().split('_')[0]
+											}
+
+	# tally & deduplicate AMR gene RPKM values by sample
+	for MG in MG_IDs:
+		dedup_list = defaultdict(list)
+
 		if verbose:
 			print('')
-			print(f"   Evaluating {mg_id}...")
+			print(f"Evaluating {MG}...")
 
+		for scaffold, values in scaf_mgid_name_rpkm.items():
+			if MG == values['mg_id'] and values['name'] not in dedup_list.keys():
+				dedup_list[values['name']]={'mg_id' : values['mg_id'],
+											'RPKM': values['RPKM'], 
+											'count' : 1, 
+											'scaffolds' : [scaffold],
+											'gene_name' : values['name']}
+			elif MG == values['mg_id'] and values['name'] in dedup_list.keys():
+				dedup_list[values['name']]['RPKM']  = float(values['RPKM']) + float(dedup_list[values['name']]['RPKM'])
+				dedup_list[values['name']]['count'] = int(dedup_list[values['name']]['count']) +1
+				dedup_list[values['name']]['scaffolds'].append(scaffold)
+
+		if verbose:
+			#print(dedup_list)
+			print(f"Number of deduplicated genes: {len(dedup_list)}")	
+			for gene_name, value in dedup_list.items():
+				if value['count'] > 1:
+					print('')
+					print(f"Duplicate gene is: '{gene_name}' count: {dedup_list[gene_name]['count']}")
+					print(f"	 tallied RPKM: {dedup_list[gene_name]['RPKM']}")
+					for scaffold, o_values in scaf_mgid_name_rpkm.items():
+						if o_values['name'] == gene_name and o_values['mg_id'] == MG:
+							print(F"		- original name '{o_values['name']}' | original RPKM {o_values['RPKM']}")
+
+		# add to dedup_dict to store all values across samples
+		for gene_name, value in dedup_list.items():
+			mg_genes[MG].append(gene_name)
+			dedup_dict[f"{MG}_{gene_name}"]=value
+
+		#add MG gene RPKM values to matrix
+		print('')
+		print(f"Updating matrix with {MG} values...")
 		for gene in unique_gene_list:
-			
-
-			if gene in AMR_name_scaffold_RPKM.keys():
-				matrix[mg_id].append(RPKM_dict[mg_id])
+			if gene in mg_genes[MG]:
+				matrix[MG].append(dedup_list[gene]['RPKM'])
 				if verbose:
-					print(gene)
+					print(f"	 {gene} (RPKM {dedup_list[gene]['RPKM']}) added to matrix")
 			else:
-				matrix[mg_id].append(0)
+				matrix[MG].append(0)
+				if verbose:
+					print(f"	 {gene} (RPKM 0, ND) added to matrix")		
+
+
+	# if verbose:
+	#	 print('')
+	#	 print("MG gene list:")
+	#	 print(f"   length: {len(mg_genes)}")
+	#	 print(mg_genes)
+	#	 print('')
+	#	 print("dedup_dict:")
+	#	 print(f"   length: {len(dedup_dict)}")
+	#	 print(dedup_dict)
+	#	 print('')
+	#	 print("matrix:")
+	#	 print(f"   length: {len(matrix)}")
+	#	 print(matrix)	
+
+
+	print('')
+	print('Converting completed matrix to dataframe...')
 
 	RPKM_matrix = pd.DataFrame(matrix, index = unique_gene_list)
 	RPKM_matrix.sort_index(inplace=True)
 	RPKM_matrix.sort_index(axis=1, inplace=True)	
 
-	if verbose:
-		print('')
-		print(RPKM_matrix)
-
-	print('')
-	print(f"{len(unique_gene_list)} unique genes & {len(MG_IDs)} samples were included in matrix.")
-
-	return RPKM_matrix
+	print(f"Looks like everything completed.  {len(MG_IDs)} MGs evaluated with {len(unique_gene_list)} unique genes.")
+	
+	return RPKM_matrix, unique_gene_list
 
 def main():
 	# configure argparse arguments & pass to functions.
@@ -252,13 +332,12 @@ def main():
 	AMR_dict, MG_IDs= parse_amrfinder_tsvs(args['amrfinder_tsv_path'], args['verbose'])
 	RPKM_dict= parse_coverage_tsvs(args['coverage_magic_path'], args['verbose'], AMR_dict)
 	validate_dict, validate_detail_dict= validate(RPKM_dict, AMR_dict, args['amrfinder_tsv_path'], args['verbose'])	
-	RPKM_matrix= generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, args['verbose'])
+	RPKM_matrix, unique_gene_list= generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, args['verbose'])
 
-	print('Writing validate_detail_dict file...')
-	with open(f"{args['output']}/genes_to_validate.tsv", 'w') as file:
-		for key, value in validate_detail_dict.items():
-			newLine = f'{key}\t{value}'
-			file.write(newLine)
+# write output tsv file
+	RPKM_matrix.to_csv(f"{args['output']}/RPKM_matrix.tsv", sep='\t')
+
+	print(f"Output written to: /Users/NewNasty/Downloads/test/RPKM_matrix.tsv {args['output']}")
 
 	if args['verbose']:
 		#print('')
