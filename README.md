@@ -11,9 +11,11 @@ AMRFinder result analytic workflow
 4. Annotate genes with AMRFinder
 5. Estimate in-situ gene coverage with CoverageMagic workflow
 6. Post-processing
+
 	00. filter for complete genes ([00_amrfinder_filter.py](https://github.com/michaelwoodworth/AMRFinder_scripts/blob/master/01_amrfinder_binary_matrix.py))
 	01. create binary presence/absence matrix ([01_amrfinder_binary_matrix.py](https://github.com/michaelwoodworth/AMRFinder_scripts/blob/master/01_amrfinder_binary_matrix.py))
 	02. estimate relative abundance of identified AMR genes ([02_amrfinder_validate_and_summarize_RPKM.py](https://github.com/michaelwoodworth/AMRFinder_scripts/blob/master/02_amrfinder_validate_and_summarize_RPKM.py))
+
 7. Analysis in R
 8. Produce heatmaps in R
 
