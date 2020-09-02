@@ -323,12 +323,7 @@ def main():
 		)
 	parser.add_argument(
 		'-V', '--validate',
-		help = 'Write validation list to $output/genes_to_validate.tsv.',
-		action='store_true'
-		)
-	parser.add_argument(
-		'-d', '--deduplicated_output',
-		help = 'Write deduplicated RPKM & contigs to $output/deduplicated.tsv.',
+		help = 'Write genes_to_validate.tsv and deduplicated.tsv.',
 		action='store_true'
 		)
 	args=vars(parser.parse_args())
@@ -347,10 +342,7 @@ def main():
 # option to write validate_detail_dict.tsv file
 	if args['validate']:
 		validate_detail_dict.to_csv(f"{args['output']}/genes_to_validate.tsv", sep='\t')
-
-# option to write dedup.tsv file
-	if args['deduplicated_output']:
-		dedup_dict.to_csv(f"{args['output']}/deduplicated.tsv", sep='\t')
+		dedup_dict.to_csv(f"{args['output']}/deduplicated.tsv", sep='\t')		
 
 # write output tsv file
 	RPKM_matrix.to_csv(f"{args['output']}/RPKM_matrix.tsv", sep='\t')
