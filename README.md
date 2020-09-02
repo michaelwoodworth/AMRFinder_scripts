@@ -17,8 +17,6 @@ AMRFinder result analytic workflow
 7. Analysis in R
 8. Produce heatmaps in R
 
-***
-
 ## Workflow detail
 
 ### 1. Prepare reads for assembly
