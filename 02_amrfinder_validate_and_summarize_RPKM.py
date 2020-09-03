@@ -21,7 +21,7 @@ length / effort normalized AMR gene abundance (RPKM)
 
 '''
 
-import argparse
+import argparse, csv, glob, os
 from collections import defaultdict
 import pandas as pd
 import glob, os
@@ -158,8 +158,13 @@ def validate(RPKM_dict, AMR_dict, AMR_input_directory, verbose):
 				HMM_id = X[16]			# id of closest HMM
 				HMM_desc = X[17]		# description of closest HMM
 
+
+				# if protein_id in validate_dict.keys():
+				# 	validate_detail_dict[protein_id]=line
+
 				if protein_id in validate_dict.keys():
-					validate_detail_dict[protein_id]=line
+					validate_detail_dict[protein_id]={'protein_id' : protein_id,
+					'gene_symbol' : gene_symbol, 'sequence_name' : sequence_name}
 
 
 
@@ -341,13 +346,25 @@ def main():
 
 # option to write validate_detail_dict.tsv file
 	if args['validate']:
-		validate_detail_dict.to_csv(f"{args['output']}/genes_to_validate.tsv", sep='\t')
-		dedup_dict.to_csv(f"{args['output']}/deduplicated.tsv", sep='\t')		
+		def write_tsv(path, out_file_name, dictionary):
+			output=f"{path}/{out_file_name}"
+			with open(output, 'w') as tsvfile:
+				writer = csv.writer(tsvfile, delimiter = '\t')
+				for key, value in dictionary.items():
+					writer.writerow(f"{key}\t{value}")
+
+		write_tsv(args['output'], genes_to_validate.tsv,
+			validate_detail_dict)
+
+
+
+		# validate_detail_dict.to_csv(f"{args['output']}/genes_to_validate.tsv", sep='\t')
+		# dedup_dict.to_csv(f"{args['output']}/deduplicated.tsv", sep='\t')		
 
 # write output tsv file
 	RPKM_matrix.to_csv(f"{args['output']}/RPKM_matrix.tsv", sep='\t')
 
-	print(f"Output written to: /Users/NewNasty/Downloads/test/RPKM_matrix.tsv {args['output']}")
+	print(f"Output written to: {args['output']}")
 
 	if args['verbose']:
 		#print('')
