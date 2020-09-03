@@ -84,7 +84,7 @@ def validate(RPKM_dict, AMR_dict, AMR_input_directory, verbose):
 
 	# initialize dictionary & list objects
 	validate_dict = defaultdict(defaultdict(list).copy)		# initialize validate_dict
-	validate_detail_dict = defaultdict(defaultdict(list).copy)		# initialize validate_dict
+	validate_detail_dict = defaultdict(list)		# initialize validate_dict
 	total_genes = 0
 	valid_gene = 0
 	method_hmm = 0
@@ -163,10 +163,8 @@ def validate(RPKM_dict, AMR_dict, AMR_input_directory, verbose):
 				# 	validate_detail_dict[protein_id]=line
 
 				if protein_id in validate_dict.keys():
-					validate_detail_dict[protein_id]={'protein_id' : protein_id,
-					'gene_symbol' : gene_symbol, 'sequence_name' : sequence_name}
-
-
+					validate_detail_dict[protein_id]=[protein_id, 
+					gene_symbol, sequence_name]
 
 	return validate_dict, validate_detail_dict
 
@@ -252,7 +250,8 @@ def generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, verbose):
 		# add to dedup_dict to store all values across samples
 		for gene_name, value in dedup_list.items():
 			mg_genes[MG].append(gene_name)
-			dedup_dict[f"{MG}_{gene_name}"]=value
+			dedup_dict[f"{MG}_{gene_name}"]=[value['mg_id'], value['RPKM'], 
+			value['count'], value['scaffolds'], value['gene_name']]
 
 		#add MG gene RPKM values to matrix
 		print('')
@@ -344,18 +343,35 @@ def main():
 	validate_dict, validate_detail_dict= validate(RPKM_dict, AMR_dict, args['amrfinder_tsv_path'], args['verbose'])	
 	RPKM_matrix, unique_gene_list, dedup_dict= generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, args['verbose'])
 
-# option to write validate_detail_dict.tsv file
+# option to write validation tsv files
 	if args['validate']:
-		def write_tsv(path, out_file_name, dictionary):
-			output=f"{path}/{out_file_name}"
-			with open(output, 'w') as tsvfile:
-				writer = csv.writer(tsvfile, delimiter = '\t')
-				for key, value in dictionary.items():
-					writer.writerow(f"{key}\t{value}")
+		print('')
+		print(f"Writing validation files...")
+		print(f"Validation output path: {args['output']}")
+		def list_to_tsv(path, out_file_name, dictionary,
+			col_header):
+			outfile=f"{path}/{out_file_name}"
+			df = pd.DataFrame.from_dict(dictionary,
+				orient="index", columns=col_header)
+			df.to_csv(outfile,  sep='\t')
+			print(f"   ...{out_file_name} complete!")
 
-		write_tsv(args['output'], genes_to_validate.tsv,
-			validate_detail_dict)
+		print('')
+		print(f"   - validate_detail_dict...")
 
+		col_header=['protein_id', 
+					'gene_symbol', 
+					'sequence_name']
+		list_to_tsv(args['output'], 'genes_to_validate.tsv',
+			validate_detail_dict, col_header)
+
+		print('')
+		print(f"   - dedup_dict...")
+
+		col_header=['mg_id', 
+			'RPKM', 'count', 'scaffolds', 'gene_name']
+		list_to_tsv(args['output'], 'deduplicated_RPKM.tsv',
+			dedup_dict, col_header)
 
 
 		# validate_detail_dict.to_csv(f"{args['output']}/genes_to_validate.tsv", sep='\t')
