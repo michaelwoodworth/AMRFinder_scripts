@@ -91,22 +91,28 @@ optional arguments:
 - Second, [RPKM](https://sites.google.com/site/wiki4metagenomics/pdf/definition/rpkm-calculation) values are tallied for duplicate gene names within a sample (which is printed to STDOUT if the verbose option is selected) and then used to construct a matrix of RPKM values with rows ov unique genes by columns of metagenomes.
 
 ```console
-usage: 02_amrfinder_validate_and_summarize_RPKM.py [-h] -a  -m  -o  [-v]
+usage: 02_amrfinder_validate_and_summarize_RPKM.py [-h] -a  -m  -o  [-v] [-V]
 
-Estimate RPKM of detected AMR genes 
+Validate and summarize RPKM of AMRFinder-detected genes 
 for plots & analysis.
 
 This script takes the following inputs:
 - directory containing filtered AMRFinder tsv files
   (output from step 00)
-- directory containing *_gene_RPKM.tsv files
+- directory containing ${uniqueID}_gene_RPKM.tsv files
   (https://github.com/rotheconrad/00_in-situ_GeneCoverage)
 
-As an intermediate validation step, all genes input in AMRFinder 
-tables are tested against all genes in the coverage_magic tsv files.
-If there are any genes that are not in the submitted coverage_magic
-tsv files, these are output as:
-- genes_to_validate.tsv
+With intermediate validation steps (option -V):
+
+- all genes input in AMRFinder tables are tested against all genes 
+in the coverage_magic tsv files. If there are any genes that are 
+not in the submitted coverage_magic tsv files, these are optionally 
+output as: genes_to_validate.tsv
+
+- all duplicated gene RPKM values are summed by sample.  
+Input contigs/scaffolds hosting the detected genes are listed with
+the summed (deduplicated) RPKM values and gene sequence name and
+output as: deduplicated_RPKM.tsv
 
 Genes that have RPKM values are returned with following output:
 - specified output file & path containting a single tsv file with 
@@ -120,6 +126,7 @@ optional arguments:
   -m , --coverage_magic_path 
                         Please specify directory path containing coverage
                         magic path.
-  -o , --output         Please specify output file path & prefix.
+  -o , --output         Please specify output file path (& optional prefix).
   -v, --verbose         Toggle volume of printed output.
+  -V, --validate        Write genes_to_validate.tsv and deduplicated.tsv.
 ```

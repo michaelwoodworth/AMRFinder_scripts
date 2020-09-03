@@ -9,11 +9,17 @@ This script takes the following inputs:
 - directory containing ${uniqueID}_gene_RPKM.tsv files
 	(https://github.com/rotheconrad/00_in-situ_GeneCoverage)
 
-As an intermediate validation step, all genes input in AMRFinder 
-tables are tested against all genes in the coverage_magic tsv files.
-If there are any genes that are not in the submitted coverage_magic
-tsv files, these are output as:
-- genes_to_validate.tsv
+With intermediate validation steps (option -V):
+
+- all genes input in AMRFinder tables are tested against all genes 
+in the coverage_magic tsv files. If there are any genes that are 
+not in the submitted coverage_magic tsv files, these are optionally 
+output as: genes_to_validate.tsv
+
+- all duplicated gene RPKM values are summed by sample.  
+Input contigs/scaffolds hosting the detected genes are listed with
+the summed (deduplicated) RPKM values and gene sequence name and
+output as: deduplicated_RPKM.tsv
 
 Genes that have RPKM values are returned with following output:
 - specified output file & path containting a single tsv file with 
