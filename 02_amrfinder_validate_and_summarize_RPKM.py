@@ -169,7 +169,7 @@ def validate(RPKM_dict, AMR_dict, AMR_input_directory, verbose):
 				# 	validate_detail_dict[protein_id]=line
 
 				if protein_id in validate_dict.keys():
-					validate_detail_dict[protein_id]=[protein_id, 
+					validate_detail_dict[protein_id]=[protein_id.rstrip().split('_')[0], 
 					gene_symbol, sequence_name]
 
 	return validate_dict, validate_detail_dict
@@ -295,7 +295,7 @@ def generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, verbose):
 	RPKM_matrix.sort_index(inplace=True)
 	RPKM_matrix.sort_index(axis=1, inplace=True)	
 
-	print(f"Looks like everything completed.  {len(MG_IDs)} MGs evaluated with {len(unique_gene_list)} unique genes.")
+	print(f"{len(MG_IDs)} MGs evaluated with {len(unique_gene_list)} unique genes.")
 	
 	return RPKM_matrix, unique_gene_list, dedup_dict
 
@@ -365,7 +365,7 @@ def main():
 		print('')
 		print(f"   - validate_detail_dict...")
 
-		col_header=['protein_id', 
+		col_header=['mg_id', 
 					'gene_symbol', 
 					'sequence_name']
 		list_to_tsv(args['output'], 'genes_to_validate.tsv',
@@ -386,7 +386,9 @@ def main():
 # write output tsv file
 	RPKM_matrix.to_csv(f"{args['output']}/RPKM_matrix.tsv", sep='\t')
 
-	print(f"Output written to: {args['output']}")
+	print('')
+	print('Looks like everything completed!')
+	print(f"Output files written to: {args['output']}")
 
 	if args['verbose']:
 		#print('')
