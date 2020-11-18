@@ -224,6 +224,7 @@ def generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, verbose):
 	# tally & deduplicate AMR gene RPKM values by sample
 	for MG in MG_IDs:
 		dedup_list = defaultdict(list)
+		dedup_count = 0
 
 		if verbose:
 			print('')
@@ -240,10 +241,11 @@ def generate_RPKM_matrix(AMR_dict, RPKM_dict, MG_IDs, verbose):
 				dedup_list[values['name']]['RPKM']  = float(values['RPKM']) + float(dedup_list[values['name']]['RPKM'])
 				dedup_list[values['name']]['count'] = int(dedup_list[values['name']]['count']) +1
 				dedup_list[values['name']]['scaffolds'].append(scaffold)
+				dedup_count += 1
 
 		if verbose:
 			#print(dedup_list)
-			print(f"Number of deduplicated genes: {len(dedup_list)}")	
+			print(f"Number of deduplicated genes: {dedup_count}")	
 			for gene_name, value in dedup_list.items():
 				if value['count'] > 1:
 					print('')
