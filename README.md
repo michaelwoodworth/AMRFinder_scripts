@@ -24,6 +24,15 @@ AMRFinder result analytic workflow
 ### 1. Prepare reads for assembly
 Since I work with human-associated metagenomes, in addition to trimming with trimmomatic, I usually attempt to remove reads aligning to reference human genomes.  This can be efficiently done in one step with the Huttenhower lab tool [kneaddata](https://huttenhower.sph.harvard.edu/kneaddata/).
 
+```console
+# test
+kneaddata --input $R1 --input $R2 --run-bmtagger --remove-intermediate-output -db $db_path --output $outdir
+
+# for loop
+for ID in `cat acc_list.txt`; do R1=${indir}/${ID}_1.fastq; R2=${indir}/${ID}_2.fastq; kneaddata --input $R1 --input $R2 --run-bmtagger --remove-intermediate-output -t 10 --reference-db $db_path -o $outdir; echo $ID complete.; done
+
+```
+
 ### 2. Assembly
 I primarily assemble genomes and metagenomes with [SPAdes](https://cab.spbu.ru/software/spades/).
 
