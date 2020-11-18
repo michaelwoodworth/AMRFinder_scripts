@@ -133,7 +133,7 @@ def main():
 		)
 	parser.add_argument(
 		'-o', '--output',
-		help = 'Please specify AMRFinder filtered prefix & path.',
+		help = 'Please specify AMRFinder filtered prefix & path for output tsv.',
 		metavar = '',
 		type=str,
 		required=True
@@ -149,13 +149,13 @@ def main():
 		)
 	parser.add_argument(
 		'-j', '--just_AMR',
-		help = 'Flag to remove non-AMR AMRFinder results (e.g. virulence, stress)',
+		help = 'Flag to write tsv with just AMR results',
 		required=False,
 		action='store_true'
 		)
 	parser.add_argument(
 		'-v', '--virulence_stress',
-		help = 'Flag to remove AMR results (e.g. filter only virulence, stress)',
+		help = 'Flag to write tsv without AMR results (e.g. filter only virulence, stress)',
 		required=False,
 		action='store_true'
 		)

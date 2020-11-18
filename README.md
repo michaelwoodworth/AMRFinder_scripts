@@ -44,10 +44,13 @@ Genes predicted in step 3 from a metagenome/genome as well as metagenome/genome 
 This script allows users to also include AMRFinder hits that were partial but located at the end of a contig sequence, which could be consistent with a sequencing/assembly issue of a gene that may be complete in host.  This option is flagged with the -m add_partial_end option.
 
 - *just_amr*:
-The -j/--just_AMR flag allows filtering of just AMR results.
+The -j/--just_AMR flag filters and writes a tsv file with just AMR results.
+
+- *virulence_stress*:
+The -v/--virulence_stress flag filters and writes a tsv file with non-AMR results.
 
 ```console
-usage: 00_amrfinder_filter.py [-h] -i  -o  [-m] [-j]
+usage: 00_amrfinder_filter.py [-h] -i  -o  [-m] [-j] [-v]
 
 Filter AMRFinder Plus results for high confidence matches.
 
@@ -55,16 +58,20 @@ This script filters AMRFinder output tables for matches, with
 default criteria focused on high quality & complete matches.
 e.g. >90% identity, >90% match length.
 
-Script options also allow filtering for just AMR determinants.
+Script options also allow filtering for just AMR determinants,
+or conversely, only non-AMR results (e.g. virulence/stress).
 
 optional arguments:
-  -h, --help      show this help message and exit
-  -i , --input    Please specify AMRFinder input tsv file name & path.
-  -o , --output   Please specify AMRFinder filtered filename & path.
-  -m , --method   Please specify filtered AMRFinder output tsv file name &
-                  path. Select from: complete -or- add_partial_end
-  -j, --just_AMR  Flag to remove non-AMR AMRFinder results (e.g. virulence,
-                  stress)
+  -h, --help            show this help message and exit
+  -i , --input          Please specify AMRFinder input tsv file name & path.
+  -o , --output         Please specify AMRFinder filtered prefix & path for
+                        output tsv.
+  -m , --method         Please specify filtered AMRFinder output tsv file name
+                        & path. Select from: complete -or- add_partial_end
+  -j, --just_AMR        Flag to write tsv with just AMR results
+  -v, --virulence_stress
+                        Flag to write tsv without AMR results (e.g. filter
+                        only virulence, stress)
 
 ```
 
