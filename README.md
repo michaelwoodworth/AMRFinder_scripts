@@ -37,7 +37,17 @@ for ID in `cat acc_list.txt`; do R1=${indir}/${ID}_1.fastq; R2=${indir}/${ID}_2.
 I primarily assemble genomes and metagenomes with [SPAdes](https://cab.spbu.ru/software/spades/).
 
 ### 3. Predict genes
-Gene prediction at the metagenome, metagenome-assembled genome (MAG), and genome level are performed using [Prodigal](https://github.com/hyattpd/Prodigal)
+Gene prediction at the metagenome, metagenome-assembled genome (MAG), and genome level are performed using [Prodigal](https://github.com/hyattpd/Prodigal) or PROKKA.
+
+```console
+########## Prodigal example
+
+# test
+prodigal -a ${ID}.faa -d ${ID}.fna -f gff -i ${scaffold} -o ${ID}.gff -p meta
+
+# for loop
+
+```
 
 ### 4. Annotate genes with AMRFinder
 Genes predicted in step 3 are then analyzed with [AMRFinder plus](https://www.ncbi.nlm.nih.gov/pathogens/antimicrobial-resistance/AMRFinder/).
