@@ -40,7 +40,7 @@ I primarily assemble genomes and metagenomes with [SPAdes](https://cab.spbu.ru/s
 Gene prediction at the metagenome, metagenome-assembled genome (MAG), and genome level are performed using [Prodigal](https://github.com/hyattpd/Prodigal) or PROKKA.
 
 ```console
-########## Prodigal example
+########## (Prodigal example) 
 
 # test
 prodigal -a ${ID}.faa -d ${ID}.fna -f gff -i ${scaffold} -o ${ID}.gff -p meta
@@ -52,6 +52,16 @@ for ID in `cat acc_list.txt`; do scaffold=${indir}/${ID}/scaffolds.fasta; prodig
 
 ### 4. Annotate genes with AMRFinder
 Genes predicted in step 3 are then analyzed with [AMRFinder plus](https://www.ncbi.nlm.nih.gov/pathogens/antimicrobial-resistance/AMRFinder/).
+
+```console
+
+#test
+amrfinder -p ${ID}.faa --plus -o ${outdir}/${ID}_amrfinder.tsv
+
+#loop
+for ID in `cat acc_list.txt`; do amrfinder -p ${indir}/${ID}.faa --plus -o ${outdir}/${ID}_amrfinder.tsv; echo $ID complete.; done
+
+```
 
 ### 5. Estimate gene RPKM with CoverageMagic workflow
 Genes predicted in step 3 from a metagenome/genome as well as metagenome/genome reads file and filtered tabular magicblast output file are used to estimate AMRFilter-detected gene RPKM using the [CoverageMagic in situ gene coverage workflow](https://github.com/rotheconrad/00_in-situ_GeneCoverage/tree/6812ebd32c5127ce8b72ba8e520799b75f45c895).
