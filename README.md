@@ -46,6 +46,7 @@ Gene prediction at the metagenome, metagenome-assembled genome (MAG), and genome
 prodigal -a ${ID}.faa -d ${ID}.fna -f gff -i ${scaffold} -o ${ID}.gff -p meta
 
 # for loop
+for ID in `cat acc_list.txt`; do scaffold=${indir}/${ID}/scaffolds.fasta; prodigal -a ${ID}.faa -d ${ID}.fna -f gff -i ${scaffold} -o ${ID}.gff -p meta; echo $ID complete.; done
 
 ```
 
