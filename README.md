@@ -17,7 +17,7 @@ AMRFinder result analytic workflow
 	3. estimate relative abundance of identified AMR genes ([02_amrfinder_validate_and_summarize_RPKM.py](https://github.com/michaelwoodworth/AMRFinder_scripts/blob/master/02_amrfinder_validate_and_summarize_RPKM.py))
 
 7. Analysis in R
-8. Produce heatmaps in R
+8. Produce figures in R
 
 ## Workflow detail
 
@@ -179,3 +179,91 @@ optional arguments:
   -v, --verbose         Toggle volume of printed output.
   -V, --validate        Write genes_to_validate.tsv and deduplicated.tsv.
 ```
+
+### 8. Figures in R
+
+- Data needs to be loaded in R with package dependencies (after installation).
+
+```R
+# load packages
+library(tidyverse)
+library(pheatmap)
+library(viridis)
+library(MEP)
+
+# specify default color scales
+scale_colour_discrete <-  function(...){
+  scale_colour_viridis(discrete=TRUE, ...)
+}
+scale_fill_discrete <-  function(...){
+  scale_fill_viridis(discrete=TRUE, ...)
+}
+
+
+# load file paths
+RPKM_tsv_path <- "<replace string between quotes with your path>"
+metadata_path <- "<replace string between quotes with your path>"    
+
+# import tsvs
+RPKM_matrix <- read_delim(paste(RPKM_tsv_path, "RPKM_matrix.tsv", sep=""), "\t", escape_double = FALSE, trim_ws = TRUE)
+
+
+# add matrix rownames for pheatmap
+RPKM_m <- RPKM_matrix %>% select(-1)
+rownames(RPKM_m) <- RPKM_matrix$X1
+
+# get sample prefixes using MEP package function
+sample_prefixes <- get_prefix(colnames(RPKM_m), sep="_", HMP=TRUE)
+
+# pivot_longer, without log-transformation
+RPKM_mL <- RPKM_m %>% 
+  rownames_to_column(var="Gene.name") %>% 
+  pivot_longer(cols = c(-Gene.name),
+               names_to="Sample",
+               values_to="RPKM")
+
+# pivot_longer, log-transformed
+RPKM_ml <- log(RPKM_m +1) %>% 
+  rownames_to_column(var="Gene.name") %>% 
+  pivot_longer(cols = c(-Gene.name),
+               names_to="Sample",
+               values_to="RPKM")
+```
+
+- Facet-wrapped line plots of gene RPKM values by sample can be a helpful way to show distributions or explore your data.
+
+```R
+# facet wrapped lineplots of RPKM by gene, sample, patient
+RPKM_lineplot <- RPKM_mL %>% ggplot(aes(x=Gene.name, y=RPKM,
+                                        group=Sample, color=Sample)) +
+  geom_line() + 
+  geom_hline(yintercept=400, linetype="dashed", alpha=0.5, color = "Red") +
+  facet_wrap(~Sample, ncol=9) +
+  theme_classic() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x  = element_blank(),
+        axis.ticks.x = element_blank(),
+        legend.position = "none"
+  )
+RPKM_lineplot
+
+# facet wrapped lineplots of log(RPKM) by gene, sample, patient
+log_RPKM_lineplot <- RPKM_ml %>% ggplot(aes(x=Gene.name, y=RPKM,
+                                        group=Sample, color=Sample)) +
+  geom_line() + 
+  facet_wrap(~Sample, ncol=9) +
+  theme_classic() +
+  theme(axis.title.x = element_blank(),
+        axis.text.x  = element_blank(),
+        axis.ticks.x = element_blank(),
+        legend.position = "none"
+  )
+log_RPKM_lineplot
+```
+
+Example output from re-analysis of data from a randomized trial of fecal microbiota transplantation for eradication of MDRO colonization.
+
+![example_lineplot](figures/RPKM_facetplot_01.png)
+
+[Pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) is an R package that supports clustering, value scaling, and annotation of rows and columns with metadata.
+
