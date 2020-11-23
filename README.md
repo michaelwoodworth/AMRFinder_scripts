@@ -261,9 +261,24 @@ log_RPKM_lineplot <- RPKM_ml %>% ggplot(aes(x=Gene.name, y=RPKM,
 log_RPKM_lineplot
 ```
 
-Example output from re-analysis of data from a randomized trial of fecal microbiota transplantation for eradication of MDRO colonization.
+*Example output from re-analysis of data from a randomized trial of fecal microbiota transplantation for eradication of carbapenem-resistant (CR) bacterial colonization.*
 
 ![example_lineplot](figures/RPKM_facetplot_01.png)
 
-[Pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) is an R package that supports clustering, value scaling, and annotation of rows and columns with metadata.
+- [Pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) is an R package that supports clustering, value scaling, and annotation of rows and columns with metadata.
 
+```R
+# heatmaps with pheatmap
+
+# plot RPKM heatmap
+pheatmap(RPKM_m,
+         color = magma(5))
+
+# plot log(RPKM) heatmap
+pheatmap(log(RPKM_m + 1),
+         color = magma(5))
+```
+
+*Example log-transformed heatmap from re-analysis of data from a randomized trial of fecal microbiota transplantation for eradication of carbapenem-resistant (CR) bacterial colonization.*
+
+![example_lineplot](figures/RPKM_facetplot_01.png)
