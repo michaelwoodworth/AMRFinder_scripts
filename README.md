@@ -75,7 +75,7 @@ for ID in `cat acc_list.txt`; do amrfinder -p ${indir}/${ID}.faa --plus -o ${out
 
 ```
 
-### 5. Estimate gene RPKM with CoverageMagic workflow
+### 5. Estimate gene RPKM with CoverageMagic workflow (for metagenomes)
 Genes predicted in step 3 from a metagenome/genome as well as metagenome/genome reads file and filtered tabular magicblast output file are used to estimate AMRFilter-detected gene RPKM using the [CoverageMagic in situ gene coverage workflow](https://github.com/rotheconrad/00_in-situ_GeneCoverage/tree/6812ebd32c5127ce8b72ba8e520799b75f45c895).
 
 ### 6. Post-processing
@@ -118,6 +118,8 @@ optional arguments:
 ```
 
 **2. 01_amrfinder_binary_matrix.py** - this python script searches for .tsv files in an input directory and produces a binary presence/absence matrix for all genes across all samples coded as 0 for absent and 1 as present.
+
+*Note this step is useful for genomes or metagenomes if relative abundance data aren't of primary interest/available.*
 
 ```console
 usage: 01_amrfinder_binary_matrix.py [-h] -i INPUT -o OUTPUT [-v]
@@ -181,6 +183,8 @@ optional arguments:
 ```
 
 ### 8. Figures in R
+
+These steps walk through production of a gene RPKM lineplot and heatmap.  Of note, the heatmap step is also a useful way to present presence/absence of gene binary matrix tables from step 6.2 (01_amrfinder_binary_matrix.py).
 
 - Data needs to be loaded in R with package dependencies (after installation).
 
