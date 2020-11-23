@@ -184,7 +184,7 @@ optional arguments:
 
 ### 8. Figures in R
 
-These steps walk through production of a gene RPKM lineplot and heatmap.  Of note, the heatmap step is also a useful way to present presence/absence of gene binary matrix tables from step 6.2 (01_amrfinder_binary_matrix.py).
+These steps walk through production of a gene RPKM lineplot and heatmap.  Of note, the heatmap step is also a useful way to present presence/absence of gene binary matrix tables from step 6.2 (01_amrfinder_binary_matrix.py) if working with genomes or if gene coverage is not of primary interest.
 
 - Data needs to be loaded in R with package dependencies (after installation).
 
