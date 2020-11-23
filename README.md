@@ -263,7 +263,7 @@ log_RPKM_lineplot
 
 *Example output from re-analysis of data from a randomized trial of fecal microbiota transplantation for eradication of carbapenem-resistant (CR) bacterial colonization.*
 
-![example_lineplot](figures/RPKM_facetplot_01.png)
+![example_lineplot](figures/RPKM_facetplot_example.png)
 
 - [Pheatmap](https://cran.r-project.org/web/packages/pheatmap/pheatmap.pdf) is an R package that supports clustering, value scaling, and annotation of rows and columns with metadata.
 
@@ -281,4 +281,4 @@ pheatmap(log(RPKM_m + 1),
 
 *Example log-transformed heatmap from re-analysis of data from a randomized trial of fecal microbiota transplantation for eradication of carbapenem-resistant (CR) bacterial colonization.*
 
-![example_lineplot](figures/RPKM_facetplot_01.png)
+![example_lineplot](figures/pheatmap_example.png)
