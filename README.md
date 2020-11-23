@@ -36,6 +36,18 @@ for ID in `cat acc_list.txt`; do R1=${indir}/${ID}_1.fastq; R2=${indir}/${ID}_2.
 ### 2. Assembly
 I primarily assemble genomes and metagenomes with [SPAdes](https://cab.spbu.ru/software/spades/).
 
+
+- consider [renaming scaffolds](https://github.com/rotheconrad/00_in-situ_GeneCoverage) for streamlined labeling downstream (and MagicBlast compatibility)
+
+``` console
+# test
+python 01a_Fasta_rename_sequences.py -i ${ID}_scaffolds.fasta -p ${ID}
+
+# for loop
+for ID in `cat acc_list.txt`; do python 01a_Fasta_rename_sequences.py -i ${ID}_scaffolds.fasta -p ${ID}; done
+
+```
+
 ### 3. Predict genes
 Gene prediction at the metagenome, metagenome-assembled genome (MAG), and genome level are performed using [Prodigal](https://github.com/hyattpd/Prodigal) or PROKKA.
 
