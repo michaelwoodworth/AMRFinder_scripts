@@ -117,9 +117,16 @@ optional arguments:
 
 ```
 
+```console
+# Example usage
+for ID in `cat ${list_pth}/IDlist.txt`; do echo $ID; python ${script_path}/00_amrfinder_filter.py -i ${indir}/${ID}_amrfinder.tsv -o ${outdir}/${ID} -m add_partial_end -j -v; done
+```
+
 **2. 01_amrfinder_binary_matrix.py** - this python script searches for .tsv files in an input directory and produces a binary presence/absence matrix for all genes across all samples coded as 0 for absent and 1 as present.
 
-*Note this step is useful for genomes or metagenomes if relative abundance data aren't of primary interest/available.*
+This step is useful for genomes or metagenomes if relative abundance data aren't of primary interest/available.
+
+*Note: using relative paths for writing the output tsv can throw an error.  To avoid this, use absolute paths or environmental variables instead.*
 
 ```console
 usage: 01_amrfinder_binary_matrix.py [-h] -i INPUT -o OUTPUT [-v]
@@ -133,6 +140,11 @@ optional arguments:
   -i , --input    Please specify input directory path.
   -o , --output   Please specify output filename & path.
   -v, --verbose   Increase output messaging detail, print results.
+```
+
+```console
+# Example usage
+python ${script_path}/01_amrfinder_binary_matrix.py -i ${00_filtered_path} -o ${01_output_path}/01_binary_matrix.tsv
 ```
 
 **3. 02_amrfinder_validate_and_summarize_RPKM.py** - this python script performs two main tasks.
@@ -180,6 +192,11 @@ optional arguments:
   -o , --output         Please specify output file path (& optional prefix).
   -v, --verbose         Toggle volume of printed output.
   -V, --validate        Write genes_to_validate.tsv and deduplicated.tsv.
+```
+
+```console
+# Example usage
+python ${script_path}/02_amrfinder_validate_and_summarize_RPKM.py -i ${00_filtered_path} -o ${02_output_path}/${prefix} -v -V
 ```
 
 ### 8. Figures in R
