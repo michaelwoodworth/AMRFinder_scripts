@@ -24,6 +24,8 @@ AMRFinder result analytic workflow
 ### 1. Prepare reads for assembly
 Since I work with human-associated metagenomes, in addition to trimming with trimmomatic, I usually attempt to remove reads aligning to reference human genomes.  This can be efficiently done in one step with the Huttenhower lab tool [kneaddata](https://huttenhower.sph.harvard.edu/kneaddata/).
 
+If not working with human-derived samples (e.g. isolate genomes), read quality control and trimming with trimmomatic is recommended (see [assembly optimization](https://github.com/michaelwoodworth/tips-and-scripts/blob/master/tips/Assembly_optmization.md)).  Kneaddata should also work fine here, it just will be unnecessarily slow/resource intensive to run the decontamination step.
+
 ```console
 # test
 kneaddata --input $R1 --input $R2 --run-bmtagger --remove-intermediate-output -db $db_path --output $outdir
@@ -54,7 +56,7 @@ Gene prediction at the metagenome, metagenome-assembled genome (MAG), and genome
 ```console
 ########## (Prodigal example) 
 
-# test
+# test (use -p flag for metagenome mode)
 prodigal -a ${ID}.faa -d ${ID}.fna -f gff -i ${scaffold} -o ${ID}.gff -p meta
 
 # for loop
@@ -64,6 +66,8 @@ for ID in `cat acc_list.txt`; do scaffold=${indir}/${ID}/scaffolds.fasta; prodig
 
 ### 4. Annotate genes with AMRFinder
 Genes predicted in step 3 are then analyzed with [AMRFinder plus](https://www.ncbi.nlm.nih.gov/pathogens/antimicrobial-resistance/AMRFinder/).
+
+AMRFinder installation instructions can be found [here](https://github.com/ncbi/amr/wiki/Installing-AMRFinder).
 
 ```console
 
@@ -147,7 +151,7 @@ optional arguments:
 python ${script_path}/01_amrfinder_binary_matrix.py -i ${00_filtered_path} -o ${01_output_path}/01_binary_matrix.tsv
 ```
 
-**3. 02_amrfinder_validate_and_summarize_RPKM.py** - this python script performs two main tasks.
+**3. 02_amrfinder_validate_and_summarize_RPKM.py** - this python script performs two main tasks for validating and estimating in-situ coverage of (AR) genes of interest in metagenomes.  This step is not likely to be useful for isolate genomes, could potentially be useful for isolate transcriptomics data to summarize transcript counts/differential expression.
 
 - First, a validation step is completed to confirm the presence of all AMRFinder-detected genes in the [in situ gene coverage workflow](https://github.com/rotheconrad/00_in-situ_GeneCoverage/tree/6812ebd32c5127ce8b72ba8e520799b75f45c895) ${unique_id}gene_RPKM.tsv output file.
 
@@ -196,7 +200,7 @@ optional arguments:
 
 ```console
 # Example usage
-python ${script_path}/02_amrfinder_validate_and_summarize_RPKM.py -i ${00_filtered_path} -o ${02_output_path}/${prefix} -v -V
+python ${script_path}/02_amrfinder_validate_and_summarize_RPKM.py -a ${00_filtered_path} -m ${coverage_magic_path} -o ${02_output_path}/${prefix} -v -V
 ```
 
 ### 8. Figures in R
