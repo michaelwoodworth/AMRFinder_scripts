@@ -205,9 +205,12 @@ python ${script_path}/02_amrfinder_validate_and_summarize_RPKM.py -a ${00_filter
 
 ### 8. Figures in R
 
+For the following steps in R, I usually download the tsv files from earlier steps on my personal machine for vizualization/analysis in RStudio.
+
 These steps walk through production of a gene RPKM lineplot and heatmap.  Of note, the heatmap step is also a useful way to present presence/absence of gene binary matrix tables from step 6.2 (01_amrfinder_binary_matrix.py) if working with genomes or if gene coverage is not of primary interest.
 
 - Data needs to be loaded in R with package dependencies (after installation).
+- The MEP package is available [here](https://github.com/michaelwoodworth/MEP_r), and can be installed with devtools.
 
 ```R
 # load packages
@@ -232,10 +235,32 @@ metadata_path <- "<replace string between quotes with your path>"
 # import tsvs
 RPKM_matrix <- read_delim(paste(RPKM_tsv_path, "RPKM_matrix.tsv", sep=""), "\t", escape_double = FALSE, trim_ws = TRUE)
 
+    # add matrix rownames for pheatmap
+    RPKM_m <- RPKM_matrix %>% select(-1)
+    rownames(RPKM_m) <- RPKM_matrix$X1
 
-# add matrix rownames for pheatmap
-RPKM_m <- RPKM_matrix %>% select(-1)
-rownames(RPKM_m) <- RPKM_matrix$X1
+
+# load metadata
+metadata <- read_delim(paste(metadata_path, "metadata.tsv", sep=""), "\t", escape_double = FALSE, trim_ws = TRUE)
+
+
+    #############################
+    # you will need separate dataframes for row & column metadata annotation
+    # these can be produced by subsetting data from an input metadata file
+    # or by importing two separate annotation files.
+
+    # pheatmap requires these annotation objects to be dataframes with
+    # rownames that match the names of the columns/rows as appropriate.
+    #############################
+
+    # convert to dataframe with rownames for pheatmap annotation
+    metadata_m <- metadata %>% 
+      select(-c(1,2)) %>%   # select metadata columns of interest
+      as.data.frame()
+
+    # change ${Sample} to variable/name that you will link metadata to by column or row.
+    rownames(metadata_m) <- metadata$Sample 
+
 
 # get sample prefixes using MEP package function
 sample_prefixes <- get_prefix(colnames(RPKM_m), sep="_", HMP=TRUE)
@@ -302,8 +327,26 @@ pheatmap(RPKM_m,
 # plot log(RPKM) heatmap
 pheatmap(log(RPKM_m + 1),
          color = magma(5))
+
+#############################
+# add column annotation & turn off column clustering
+
+# plot RPKM heatmap
+pheatmap(RPKM_m,
+         color = magma(5),
+         annotation_col = metadata_m,
+         cluster_cols = FALSE
+         )
+
+# plot log(RPKM) heatmap
+pheatmap(log(RPKM_m + 1),
+         color = magma(5),
+         annotation_col = metadata_m,
+         cluster_cols = FALSE
+)
+
 ```
 
-*Example log-transformed heatmap from re-analysis of data from a randomized trial of fecal microbiota transplantation for eradication of carbapenem-resistant (CR) bacterial colonization.*
+*Example log-transformed heatmap from re-analysis of data from a randomized trial of fecal microbiota transplantation for eradication of carbapenem-resistant (CR) bacterial colonization (PMID: .*
 
 ![example_lineplot](figures/pheatmap_example.png)
