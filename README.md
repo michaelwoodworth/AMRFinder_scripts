@@ -311,7 +311,7 @@ log_RPKM_lineplot <- RPKM_ml %>% ggplot(aes(x=Gene.name, y=RPKM,
 log_RPKM_lineplot
 ```
 
-*Example output from re-analysis of data from a randomized trial of fecal microbiota transplantation for eradication of carbapenem-resistant (CR) bacterial colonization.*
+*Example output from re-analysis of data from a [randomized trial of fecal microbiota transplantation for eradication of carbapenem-resistant (CR) bacterial colonization](https://doi.org/10.1093/cid/cix252).*
 
 ![example_lineplot](figures/RPKM_facetplot_example.png)
 
@@ -347,6 +347,6 @@ pheatmap(log(RPKM_m + 1),
 
 ```
 
-*Example log-transformed heatmap from re-analysis of data from a randomized trial of fecal microbiota transplantation for eradication of carbapenem-resistant (CR) bacterial colonization (PMID: .*
+*Example log-transformed heatmap from re-analysis of data from a [randomized trial of fecal microbiota transplantation for eradication of carbapenem-resistant (CR) bacterial colonization](https://doi.org/10.1093/cid/cix252): .*
 
 ![example_lineplot](figures/pheatmap_example.png)
