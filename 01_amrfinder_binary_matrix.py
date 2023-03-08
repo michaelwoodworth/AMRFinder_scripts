@@ -2,7 +2,7 @@
 
 '''Create summary matrix of AMRFinder Plus results for plots & analysis.
 
-This script sumamrizes filtered tables from 00_amrfinder_filter.
+This script summarizes filtered tables from 00_amrfinder_filter.
 '''
 
 import argparse
